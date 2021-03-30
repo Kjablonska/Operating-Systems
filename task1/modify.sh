@@ -1,24 +1,12 @@
 ##
 # Questions:
-# 1. What should happend if modify -r is provided with path to the single file - not a directory.
-# 2. <dir/file names> implies that we can provide modify with more than one path? How should it look like? Should the paths be separated by an empty space?
-# 3. Files extensions. Should anything after dot stay the same?
-# 4. What should happen when we do -u -l ?
-
-
-# TO DO:
-# - checking if path exists
-# - if modified file already exists - error
-
-####
-# $1 - 1st parameter - mode selection
-# $2 - 2nd parameter - file path
-###
-
+# 1. What should happend if modify -r is provided with path to the single file - not a directory. SHOULD CHANGE ONLY THIS FILE.
+# 3. Files extensions. Should anything after dot stay the same? SHOULD BE MODIFIED
+# 4. What should happen when we do -u -l ? ERROR
+# 5. Should we modify directory names?
 
 # Recursion flag.
 REC=0
-modify_mode=$not_set
 
 # Print help.
 help(){
@@ -34,6 +22,23 @@ help(){
     "
 }
 
+# Calls modify on each file in the given directory (and subdirectories).
+recursion(){
+    declare -a files=($(find $1/* -depth))
+
+    for file in "${files[@]}"; do
+        echo "$file"
+        if [ -d "$file" ]; then
+            # echo "dir"
+            recursion "$file" "$modify_mode"
+        elif [ -f "$file" ]; then
+            # echo "file"
+            modify "$file" "$modify_mode"
+        else
+            return
+        fi
+    done
+}
 
 # Modify file according to the selected modify_mode.
 modify(){
@@ -56,9 +61,10 @@ modify(){
     if [ "$1" != "${path_name}/$modified_file_name" ]; then
         mv -- "$1" "${path_name}/$modified_file_name"
     fi
-    echo $file_name
-    echo $modified_file_name
-    echo $2
+
+    # echo $file_name
+    # echo $modified_file_name
+    # echo $2
 }
 
 
@@ -71,7 +77,9 @@ fi
 
 # Checking recursion flag.
 case "$1" in
-    -r | -R) REC=1 shift ;;
+    -r | -R)
+        REC=1
+        shift ;;
 esac
 
 case "$1" in
@@ -83,9 +91,16 @@ esac
 
 
 while [ -n "$2" ]; do
+    if ! [ -e "$2" ]; then      # Checking if provided path exists.
+        echo "not a valid path!"
+        exit
+    fi
+
     if [ "$REC" -eq 1 ]; then
         echo "-r $modify_mode"
+        recursion "$2" "$modify_mode"
     else
+        echo "no recursion"
         modify "$2" "$modify_mode"
     fi
     shift
