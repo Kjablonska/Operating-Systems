@@ -1,9 +1,8 @@
-##
-# Questions:
-# 1. What should happend if modify -r is provided with path to the single file - not a directory. SHOULD CHANGE ONLY THIS FILE.
-# 3. Files extensions. Should anything after dot stay the same? SHOULD BE MODIFIED
-# 4. What should happen when we do -u -l ? ERROR
-# 5. Should we modify directory names?
+####
+# EOPSY 21L Task1
+# Laboratory group E
+# Karolina Jabłońska, 295814
+####
 
 # Recursion flag.
 REC=0
@@ -19,20 +18,28 @@ help(){
     ./modify [-r] [-l|-u] <dir/file names...>
     ./modify [-r] <sed pattern> <dir/file names...>
     ./modify [-h]
+
+    In order to use script with a space-separated files there is a need to pass them in brackets. The syntax is as follows:
+        ./modify [-r] [-l|-u] <dir>/'<file name>'
     "
 }
 
 # Calls modify on each file in the given directory (and subdirectories).
 recursion(){
-    declare -a files=($(find $1/* -depth))
+    declare -a files=($(find "$1"* -depth))
+
+    if [ ${#files[@]} -eq 0 ]; then
+        echo "Given directory contains no files."
+        return
+    fi
+
+    echo "${files[@]}"
 
     for file in "${files[@]}"; do
-        echo "$file"
-        if [ -d "$file" ]; then
-            # echo "dir"
-            recursion "$file" "$modify_mode"
-        elif [ -f "$file" ]; then
-            # echo "file"
+        # echo "$file"
+        # if [ -d "$file" ]; then
+        #     recursion "$file" "$modify_mode"
+        if [ -f "$file" ]; then
             modify "$file" "$modify_mode"
         else
             return
@@ -42,8 +49,8 @@ recursion(){
 
 # Modify file according to the selected modify_mode.
 modify(){
-    local file_name=$(basename $1)
-    local path_name=$(dirname $1)
+    local file_name=$(basename "$1")    # Brackets are need to handle space-separated file
+    local path_name=$(dirname "$1")
 
     case "$modify_mode" in
         low)
@@ -58,15 +65,12 @@ modify(){
     esac
 
     # Change file_name to modified_file_name.
-    if [ "$1" != "${path_name}/$modified_file_name" ]; then
-        mv -- "$1" "${path_name}/$modified_file_name"
+    if [ "$1" != "${path_name}/${modified_file_name}" ]; then
+        mv -- "$1" "${path_name}/${modified_file_name}"     # Addition of "--" means that the flags for the command are ended. As a result minus at the beining of the filename is not treated as a flag.
+    else
+        echo "${modified_file_name} File not modified."
     fi
-
-    # echo $file_name
-    # echo $modified_file_name
-    # echo $2
 }
-
 
 # If there are no parameters.
 if [ $# -eq 0 ]; then
@@ -90,18 +94,23 @@ case "$1" in
 esac
 
 
+# Addition of './' to support directories as starting from characters as "-".
 while [ -n "$2" ]; do
-    if ! [ -e "$2" ]; then      # Checking if provided path exists.
+    if ! [ -e "./$2" ]; then      # Checking if provided path exists.
         echo "not a valid path!"
         exit
     fi
 
     if [ "$REC" -eq 1 ]; then
-        echo "-r $modify_mode"
-        recursion "$2" "$modify_mode"
+        if [ -f "./$2" ]; then
+            modify "./$2" "$modify_mode"
+        else
+            recursion "./$2" "$modify_mode"
+        fi
     else
-        echo "no recursion"
-        modify "$2" "$modify_mode"
+        if [ -f "./$2" ]; then
+            modify "./$2" "$modify_mode"
+        fi
     fi
     shift
 done
