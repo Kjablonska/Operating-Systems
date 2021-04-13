@@ -26,23 +26,14 @@ help(){
 
 # Calls modify on each file in the given directory (and subdirectories).
 recursion(){
-    declare -a files=($(find "$1"* -depth))
 
-    if [ ${#files[@]} -eq 0 ]; then
-        echo "Given directory contains no files."
-        return
-    fi
-
-    echo "${files[@]}"
-
-    for file in "${files[@]}"; do
-        # echo "$file"
-        # if [ -d "$file" ]; then
-        #     recursion "$file" "$modify_mode"
-        if [ -f "$file" ]; then
-            modify "$file" "$modify_mode"
+    for file in "$1"/* ; do
+        if [ -d "$file" ]; then
+            recursion "$file" "$action" "$sed_p"
+        elif [ -f "$file" ]; then
+            modify "$file" "$action" "$sed_p"
         else
-            return
+            break
         fi
     done
 }
