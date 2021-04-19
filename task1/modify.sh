@@ -10,17 +10,23 @@ REC=0
 # Print help.
 help(){
     echo "
-    -l          Lowerize file names
-    -u          Upercase file names
-    -h          Prints help
+    -l              Lowerize filenames.
+    -u              Upercase filenames.
+    -h              Prints help.
+    -r              Applies the flag/sed pattern to all files from the provided directory.
+    <sed pattern>   Applies sed pattern to filenames.
 
     Example calls:
     ./modify [-r] [-l|-u] <dir/file names...>
     ./modify [-r] <sed pattern> <dir/file names...>
     ./modify [-h]
 
-    In order to use script with a space-separated files there is a need to pass them in brackets. The syntax is as follows:
-        ./modify [-r] [-l|-u] <dir>/'<file name>'
+    -r can be used with -u, -l and sed pattern.
+    -r can be applied to single filename and for directory.
+    One can not pass both -u and -l flags at once.
+    One can pass more than one filename at once or a whole directory when -r flag is applied.
+
+    Program changes only filenames! Directories are not changed.
     "
 }
 
@@ -36,6 +42,7 @@ recursion(){
             break
         fi
     done
+
 }
 
 # Modify file according to the selected modify_mode.
@@ -58,8 +65,8 @@ modify(){
     # Change file_name to modified_file_name.
     if [ "$1" != "${path_name}/${modified_file_name}" ]; then
         mv -- "$1" "${path_name}/${modified_file_name}"     # Addition of "--" means that the flags for the command are ended. As a result minus at the beining of the filename is not treated as a flag.
-    else
-        echo "${modified_file_name} File not modified."
+    # else
+    #     echo "${modified_file_name} File not modified."
     fi
 }
 
@@ -86,9 +93,10 @@ esac
 
 
 # Addition of './' to support directories as starting from characters as "-".
-while [ -n "$2" ]; do
+
+while [ -n "$2" ]; do             # Checking if $2 is not a null string
     if ! [ -e "./$2" ]; then      # Checking if provided path exists.
-        echo "not a valid path!"
+        echo "not a valid input!"
         exit
     fi
 
