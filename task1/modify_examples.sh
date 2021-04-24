@@ -1,9 +1,3 @@
-# ##
-# EOPSY 21L Task1
-# Laboratory group E
-# Karolina Jabłońska, 295814
-# ##
-
 # Script for testing modify.sh
 # Script is divided into 4 sections:
 # 1. No recursion - checks only simple cases of -u, -l and sed pattern applied to one and many filenames.

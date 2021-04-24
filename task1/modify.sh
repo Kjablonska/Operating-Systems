@@ -1,9 +1,3 @@
-####
-# EOPSY 21L Task1
-# Laboratory group E
-# Karolina Jabłońska, 295814
-####
-
 # Recursion flag.
 REC=0
 
@@ -65,8 +59,6 @@ modify(){
     # Change file_name to modified_file_name.
     if [ "$1" != "${path_name}/${modified_file_name}" ]; then
         mv -- "$1" "${path_name}/${modified_file_name}"     # Addition of "--" means that the flags for the command are ended. As a result minus at the beining of the filename is not treated as a flag.
-    # else
-    #     echo "${modified_file_name} File not modified."
     fi
 }
 
