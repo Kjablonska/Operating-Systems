@@ -5,11 +5,29 @@
 #include <sys/wait.h>
 #include <stdbool.h>
 
-#define NUM_CHILD   6   // Defined number of children to be created.
-#define WITH_SIGNALS 1
+/* ------------------------------------------------------------------------------------------------------------------------
 
-int interrupt = 0;
-pid_t children_pids[NUM_CHILD];
+    The aim of the laboratory was to create a program in C language for testing the synchronization mechanisms and signals.
+    It contains two parts:
+    1. Without signal handlers:
+        * creates child processes.
+        * verify correcteness of creation process.
+        * prints corresponsind messages.
+    2. With signals handlers.
+        * handles the keyboard interrupt CTRL+C
+        * on interrupt kills all created children and stops creation of the children.
+
+    To build&run:
+    gcc tsig.c
+    ./a.out
+
+ ------------------------------------------------------------------------------------------------------------------------ */
+
+#define NUM_CHILD   8                   // Defines number of children to be created.
+#define WITH_SIGNALS
+
+int interrupt = 0;                      // Flag for interrupt. On keyboard interrupt it is set to 1.
+pid_t children_pids[NUM_CHILD];         // Array for children.
 
 
 #ifdef WITH_SIGNALS
@@ -69,9 +87,10 @@ void getSystemInfo() {
 }
 
 void childProcess() {
+
     #ifdef WITH_SIGNALS
-            signal(SIGINT, SIG_IGN);
-            signal(SIGTERM, interrupt_message);
+            signal(SIGINT, SIG_IGN);                    // Signal interrupt.
+            signal(SIGTERM, interrupt_message);         // Signal terminate.
     #endif
 
     printf("child[%d]: Created by parent[%d]\n", getpid(), getpid());
@@ -93,12 +112,12 @@ void create_child(int i) {
         childProcess();
         exit(0);
     }
-    else if(pid == -1) {                                // Child process failure.
+    else if (pid == -1) {                                // Child process failure.
         printf("child[pid]: Error. Can not create new child.");
         terminate(i);
         exit(1);
     }
-    else {                                              // Parent process pid = child's ID.
+    else {                                              // Parent process; pid = child's pid.
         children_pids[i] = pid;
         printf("parent[%d]: Created child[%d]\n", getpid(), pid);
     }
@@ -110,7 +129,10 @@ int main() {
         SIGCHLD -   When a child process stops or terminates, SIGCHLD is sent to the parent process.
         SIG_DFL -   Default signal handling.
         SIGINT  -   Signal interrupt.
+        _NSIG   -   Total number of signals.
     */
+
+   // Force ignoring all signals and then restore the default handler for SIGCHLD signal.
     #ifdef WITH_SIGNALS
         for(int i = 0; i < _NSIG; i++)
             signal(i, SIG_IGN);
@@ -149,5 +171,6 @@ int main() {
     #endif
 
     return 0;
+
 }
 
