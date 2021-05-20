@@ -64,6 +64,9 @@ void getSystemInfo() {
     int status, code_zero_count = 0, code_one_count = 0;
 
     for(;;) {
+        /*
+            wait() blocks the calling process until one of its child processes exits or a signal is received.
+        */
         pid = wait(&status);
 
         if (pid == -1)
