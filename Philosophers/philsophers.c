@@ -7,8 +7,8 @@
 #include <unistd.h>
 
 #define PHILOSOPHERS_NB 5
-#define LEFT 0
-#define RIGHT 0
+#define LEFT_FORK_ID 0
+#define RIGHT_FORK_ID 0
 
 pthread_t phiolsophers_threads_ids[PHILOSOPHERS_NB];
 
@@ -25,7 +25,9 @@ void main() {
 
 
 void grab_forks(int left_fork_id) {
+    int philosopher_id = left_fork_id;
 
+    
 }
 
 void put_away_forks(int left_fork_id) {
@@ -34,7 +36,7 @@ void put_away_forks(int left_fork_id) {
 
 void eat(int philsopher_id) {
     sleep(2);
-    printf("Philosopher %d is eating with forks: %d %d", philsopher_id, LEFT, RIGHT);
+    printf("Philosopher %d is eating with forks: left [%d]  right [%d]", philsopher_id, LEFT_FORK_ID, RIGHT_FORK_ID);
 }
 
 void think(int phiolosopher_id) {
