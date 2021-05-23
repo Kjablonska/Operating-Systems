@@ -1,6 +1,6 @@
-# Operating-Systems
+# Operating Systems assignments
 
-## Task 1
+## Script for filenames modification
 The aim of this project was to implement a Shell script modifying filenames.
 It contains two files:
 - modify.sh - implementing the task.
@@ -22,8 +22,8 @@ Change filenames to lowercase.
 
 The script is capable of handling "problematic" dictionaries and filenames, such as: starting from minus sign, space-separated, containing symbols and numbers.
 
-
-## Task 2
+  
+## Processes and signals
 
 The aim of the laboratory was to create a program in C language for testing the synchronization mechanisms and signals.  
 It contains two parts:  
@@ -40,3 +40,5 @@ To build&run:
 gcc tsig.c
 ./a.out
 ```
+  
+## Dining Philosophers
