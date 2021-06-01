@@ -158,7 +158,15 @@ int main() {
 		pid = wait(&status);
 		if (pid == -1)
 			break;
+
 	}
+
+	// Call semctl with cmd = IPC_RMID.
+	// This immediately remove the semaphore set, awakening all processes blocked in semop calls on the set.
+	if (semctl(sem_id, 0, IPC_RMID) == -1){
+        printf("Error while removing the semaphore.\n");
+        exit(1);
+    }
 
 	exit(0);
 }
